@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useState } from "react";
+import React, { useRef, useMemo, useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { FlatList, StyleSheet, Text, View, SafeAreaView } from "react-native";
 import {
@@ -9,6 +9,7 @@ import {
 import ListItem from "./components/ListItem";
 import Chart from "./components/Chart";
 import { SAMPLE_DATA } from "./assets/data/sampleData";
+import { getMarketData } from "./services/cryptoService";
 
 const ListHeader = () => {
   return (
@@ -25,6 +26,15 @@ export default function App() {
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ["50%"], []);
   const [selectedCoinData, setSelectedCoinData] = useState(null);
+  const [data, setData] = useState([])
+
+  useEffect(() => {
+    const fetchMarketData = async () => {
+      const marketData =  await getMarketData();
+      setData(marketData)
+    }
+    fetchMarketData()
+  }, [])
 
   const openModal = (item) => {
     setSelectedCoinData(item);
@@ -37,7 +47,7 @@ export default function App() {
 
         <FlatList
           keyExtractor={(item) => item.id}
-          data={SAMPLE_DATA}
+          data={data}
           renderItem={({ item }) => (
             <ListItem
               name={item.name}

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, Dimensions } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   ChartDot,
@@ -7,6 +7,7 @@ import {
   ChartPathProvider,
   ChartYLabel,
 } from "@rainbow-me/animated-charts";
+import { useSharedValue } from "react-native-reanimated";
 
 export const { width: SIZE } = Dimensions.get("window");
 
@@ -18,11 +19,15 @@ const Chart = ({
   sparkline,
   symbol,
 }) => {
+    const latestCurrentPrice = useSharedValue(currentPrice);
+    useEffect(() => {
+        latestCurrentPrice.value = currentPrice
+    }, [currentPrice])
   const priceChangeColor = priceChangePercentage7d > 0 ? "green" : "red";
   const formatUSD = (value) => {
     "worklet";
     if (value === "") {
-      return `${currentPrice.toLocaleString("en-US", { currency: "USD" })}`;
+      return `${latestCurrentPrice.value.toLocaleString("en-US", { currency: "USD" })}`;
     }
 
     const formattedValue = `$${parseFloat(value)
